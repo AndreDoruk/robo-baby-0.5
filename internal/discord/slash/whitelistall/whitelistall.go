@@ -32,7 +32,7 @@ func Command(session *discordgo.Session, commandData discordgo.ApplicationComman
 	}
 
 	for _, member := range guild.Members {
-		store.Insert(member.User.ID, whitelist.Whitelist{FavorVotes: -1, AgainstVotes: -1})
+		store.Insert(member.User.ID, whitelist.Whitelist{FavorVotes: -1, AgainstVotes: -1, UserId: member.User.ID})
 		fmt.Println("Whitelisted " + member.User.Username)
 	}
 
