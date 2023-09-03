@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/timshannon/bolthold"
+	"github.com/trustig/robobaby0.5/internal/database"
 	"github.com/trustig/robobaby0.5/internal/discord/upload"
 	"github.com/trustig/robobaby0.5/internal/discord/whitelist"
 	"github.com/trustig/robobaby0.5/internal/images"
@@ -16,8 +16,9 @@ import (
 
 var channel_id string = os.Getenv("VOTING_CHANNEL_ID")
 
+const sleep_time time.Duration = 1 * time.Minute
+
 const vote_duration time.Duration = 12 * time.Hour
-const for_each_compare float64 = -10000000
 
 const min_ratio_go_through float32 = 70 / 30
 const overwhelming_difference_ratio float32 = 90 / 10
@@ -54,34 +55,38 @@ func CreateVote(session *discordgo.Session, userId string) error {
 
 	vote := Vote{message.ID, userId, time.Now(), -1}
 
-	store, err := bolthold.Open("db/votes.db", 0666, nil)
+	votes := make(map[string]Vote)
+	database.LoadJson("./db/votes.json", &votes)
+
+	defer database.SaveJson("./db/votes.json", votes)
 
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	store.Insert(userId, vote)
-	store.Close()
+	votes[userId] = vote
 
 	return nil
 }
 
-func UpdateVoting(session *discordgo.Session) {
-	store, err := bolthold.Open("db/votes.db", 0666, nil)
-
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	fmt.Println(store.Count(Vote{}, bolthold.Where("LastHour").Gt(for_each_compare)))
-
-	store.ForEach(bolthold.Where("LastHour").Gt(for_each_compare), func(vote *Vote) error {
-		go updateVote(session, vote, *store)
-		return nil
-	})
+func Loop(session *discordgo.Session) {
+	go UpdateVoting(session)
+	time.Sleep(sleep_time)
+	Loop(session)
 }
 
-func updateVote(session *discordgo.Session, vote *Vote, store bolthold.Store) {
+func UpdateVoting(session *discordgo.Session) {
+	votes := make(map[string]Vote)
+
+	database.LoadJson("votes.json", &votes)
+	defer database.SaveJson("votes.json", votes)
+
+	for _, vote := range votes {
+		go updateVote(session, vote, &votes)
+	}
+}
+
+func updateVote(session *discordgo.Session, vote Vote, votes *map[string]Vote) {
 	message, err := session.ChannelMessage(channel_id, vote.MessageId)
 
 	if err != nil {
@@ -91,8 +96,6 @@ func updateVote(session *discordgo.Session, vote *Vote, store bolthold.Store) {
 	remainingTime := time.Until(vote.TimeStarted.Add(vote_duration))
 	overwhelmingDifference := overwhelmingDifferenceInVotes(message)
 
-	fmt.Println("C!")
-
 	if remainingTime.Minutes() > 0 && !overwhelmingDifference {
 		hours := math.Floor(remainingTime.Hours())
 
@@ -101,15 +104,11 @@ func updateVote(session *discordgo.Session, vote *Vote, store bolthold.Store) {
 			vote.LastHour = hours
 		}
 
-		store.Update(vote.UserId, vote)
+		(*votes)[vote.UserId] = vote
 	} else {
 		go finishVote(session, message, vote)
 
-		err = store.Delete(vote.UserId, Vote{})
-
-		if err != nil {
-			log.Fatalln(err)
-		}
+		delete(*votes, vote.UserId)
 	}
 }
 
@@ -135,14 +134,11 @@ func editImageTimestamp(session *discordgo.Session, message *discordgo.Message, 
 	session.ChannelMessageEdit(message.ChannelID, message.ID, url)
 }
 
-func finishVote(session *discordgo.Session, message *discordgo.Message, vote *Vote) {
-	store, err := bolthold.Open("db/whitelist.db", 0666, nil)
+func finishVote(session *discordgo.Session, message *discordgo.Message, vote Vote) {
+	whitelists := make(map[string]whitelist.Whitelist)
+	database.LoadJson("db/whitelist.json", &whitelists)
 
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	defer store.Close()
+	defer database.SaveJson("db/whitelist.json", whitelists)
 
 	votesFavor, votesAgainst := getFavorAndAgainstVotes(message)
 	ratio := float32(votesFavor) / float32(votesAgainst)
@@ -155,12 +151,7 @@ func finishVote(session *discordgo.Session, message *discordgo.Message, vote *Vo
 			AgainstVotes: votesAgainst,
 			UserId:       vote.UserId,
 		}
-
-		err = store.Insert(vote.UserId, whitelist)
-
-		if err != nil {
-			log.Fatalln(err)
-		}
+		whitelists[vote.UserId] = whitelist
 	}
 
 	go updateVoteVictory(session, message, wentThrough)

@@ -1,10 +1,11 @@
 package registervotecmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/timshannon/bolthold"
+	"github.com/trustig/robobaby0.5/internal/database"
 	"github.com/trustig/robobaby0.5/internal/discord/voting"
 )
 
@@ -30,10 +31,9 @@ var COMMAND *discordgo.ApplicationCommand = &discordgo.ApplicationCommand{
 }
 
 func Command(session *discordgo.Session, commandData discordgo.ApplicationCommandInteractionData, interaction *discordgo.InteractionCreate) string {
-	if len(commandData.Options) > 2 {
+	if len(commandData.Options) < 2 {
 		return "Please specify both a message and a user"
 	}
-
 	userId := commandData.Options[0].Value.(string)
 	messageId := commandData.Options[1].Value.(string)
 
@@ -43,12 +43,14 @@ func Command(session *discordgo.Session, commandData discordgo.ApplicationComman
 		return "Error while trying to create vote: ```yaml\n" + err.Error() + "```"
 	}
 
-	store, err := bolthold.Open("db/votes.db", 0666, nil)
-	defer store.Close()
+	votes := make(map[string]voting.Vote)
+	database.LoadJson("db/votes.json", &votes)
+	defer database.SaveJson("db/votes.json", votes)
 
 	if err != nil {
 		return "Error while trying to create vote: ```yaml\n" + err.Error() + "```"
 	}
+	fmt.Println(3)
 
 	vote := voting.Vote{
 		MessageId:   messageId,
@@ -56,8 +58,9 @@ func Command(session *discordgo.Session, commandData discordgo.ApplicationComman
 		TimeStarted: message.Timestamp,
 		LastHour:    -1,
 	}
+	fmt.Println(4)
 
-	err = store.Insert(userId, vote)
+	votes[userId] = vote
 
 	if err != nil {
 		return "Error while trying to create vote: ```yaml\n" + err.Error() + "```"

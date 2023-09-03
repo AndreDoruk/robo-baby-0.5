@@ -8,7 +8,7 @@ import (
 	"sync"
 
 	"github.com/PuerkitoBio/goquery"
-	//"github.com/timshannon/bolthold"
+	//"github.com/boltdb/bolt"
 )
 
 const workshop_item_url string = "https://steamcommunity.com/sharedfiles/filedetails/?id="

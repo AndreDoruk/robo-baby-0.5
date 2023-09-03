@@ -43,7 +43,14 @@ func OnInteract(session *discordgo.Session, interaction *discordgo.InteractionCr
 	command, ok := commands[commandData.Name]
 
 	if ok {
+		go func() {
+			session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponsePong,
+			})
+		}()
+
 		response := command.Function(session, commandData, interaction)
+
 		respondInteraction(session, interaction, commandData, response)
 
 		logging.LogCommand(session, interaction, commandData)

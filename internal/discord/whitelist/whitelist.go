@@ -1,10 +1,8 @@
 package whitelist
 
 import (
-	"fmt"
-
 	"github.com/bwmarrin/discordgo"
-	"github.com/timshannon/bolthold"
+	"github.com/trustig/robobaby0.5/internal/database"
 )
 
 type Whitelist struct {
@@ -14,20 +12,10 @@ type Whitelist struct {
 }
 
 func OnJoin(session *discordgo.Session, event *discordgo.GuildMemberAdd) {
-	store, err := bolthold.Open("db/whitelist.db", 0666, nil)
+	whitelist := make(map[string]Whitelist)
+	database.LoadJson("db/whitelist.json", &whitelist)
 
-	if err != nil {
-		fmt.Println(err)
-		session.GuildBanCreate(event.Member.GuildID, event.Member.User.ID, 0)
-	}
-
-	defer store.Close()
-
-	var whitelist Whitelist
-	err = store.Find(&whitelist, bolthold.Where("UserId").Eq(event.User.ID))
-
-	if err != nil {
-		fmt.Println(err)
+	if _, exists := whitelist[event.User.ID]; !exists {
 		session.GuildBanCreate(event.Member.GuildID, event.Member.User.ID, 0)
 	}
 }

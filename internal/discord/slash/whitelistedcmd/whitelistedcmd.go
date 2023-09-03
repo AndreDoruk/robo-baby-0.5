@@ -1,10 +1,8 @@
 package whitelistedcmd
 
 import (
-	"log"
-
 	"github.com/bwmarrin/discordgo"
-	"github.com/timshannon/bolthold"
+	"github.com/trustig/robobaby0.5/internal/database"
 	"github.com/trustig/robobaby0.5/internal/discord/whitelist"
 )
 
@@ -15,20 +13,15 @@ var COMMAND *discordgo.ApplicationCommand = &discordgo.ApplicationCommand{
 }
 
 func Command(session *discordgo.Session, commandData discordgo.ApplicationCommandInteractionData, interaction *discordgo.InteractionCreate) string {
-	store, err := bolthold.Open("db/whitelist.db", 0666, nil)
-
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	defer store.Close()
+	whitelists := make(map[string]whitelist.Whitelist)
+	database.LoadJson("db/whitelist.json", &whitelists)
+	defer database.SaveJson("db/whitelist.json", whitelists)
 
 	text := "Whitelisted users: \n"
 
-	store.ForEach(bolthold.Where("FavorVotes").Gt(-100), func(whitelist *whitelist.Whitelist) error {
+	for _, whitelist := range whitelists {
 		text += "<@" + whitelist.UserId + "> \n"
-		return nil
-	})
+	}
 
 	return text
 }

@@ -1,11 +1,9 @@
 package schedule
 
 import (
-	"fmt"
-	"log"
 	"time"
 
-	"github.com/timshannon/bolthold"
+	"github.com/trustig/robobaby0.5/internal/database"
 )
 
 type validFunc func()
@@ -21,35 +19,26 @@ func Loop(name string, duration time.Duration, function validFunc) {
 }
 
 func getSleepTime(name string, duration time.Duration) time.Duration {
-	store, err := bolthold.Open("db/timed.db", 0666, nil)
+	times := make(map[string]time.Time)
 
-	if err != nil {
-		log.Fatalln(err)
-	}
+	database.LoadJson("db/timed.json", &times)
+	defer database.SaveJson("db/timed.json", times)
 
-	var lastTime time.Time
-	err = store.Get(name, &lastTime)
+	lastTime, exists := times[name]
 
-	if err != nil {
-		fmt.Println(err)
-
-		store.Insert(name, time.Now())
-		store.Close()
-
+	if !exists {
+		times[name] = time.Now()
 		return 0 * time.Hour
 	}
 
-	store.Close()
 	return time.Until(lastTime.Add(duration))
 }
 
 func updateSleepTime(name string) {
-	store, err := bolthold.Open("db/timed.db", 0666, nil)
+	times := make(map[string]time.Time)
 
-	if err != nil {
-		log.Fatalln(err)
-	}
+	database.LoadJson("db/timed.json", &times)
+	defer database.SaveJson("db/timed.json", times)
 
-	store.Update(name, time.Now())
-	store.Close()
+	times[name] = time.Now()
 }
