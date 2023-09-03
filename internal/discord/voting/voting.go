@@ -69,12 +69,6 @@ func CreateVote(session *discordgo.Session, userId string) error {
 	return nil
 }
 
-func Loop(session *discordgo.Session) {
-	go UpdateVoting(session)
-	time.Sleep(sleep_time)
-	Loop(session)
-}
-
 func UpdateVoting(session *discordgo.Session) {
 	votes := make(map[string]Vote)
 
@@ -137,7 +131,6 @@ func editImageTimestamp(session *discordgo.Session, message *discordgo.Message, 
 func finishVote(session *discordgo.Session, message *discordgo.Message, vote Vote) {
 	whitelists := make(map[string]whitelist.Whitelist)
 	database.LoadJson("db/whitelist.json", &whitelists)
-
 	defer database.SaveJson("db/whitelist.json", whitelists)
 
 	votesFavor, votesAgainst := getFavorAndAgainstVotes(message)

@@ -19,6 +19,7 @@ import (
 
 const update_items_frequency time.Duration = 12 * time.Hour
 const server_name_frequency time.Duration = 24 * time.Hour
+const vote_update_frequency time.Duration = 2 * time.Minute
 
 func main() {
 	session, err := discordgo.New("Bot " + os.Getenv("TOKEN"))
@@ -40,14 +41,17 @@ func main() {
 	}
 
 	slash.CreateCommands(session)
-	go voting.Loop(session)
 
 	schedule.Loop("workshopItems", update_items_frequency, func() {
 		items.SendWorkshopItems(session, workshop.GetMostPopularItems())
 	})
 
-	schedule.Loop("servername", server_name_frequency, func() {
+	schedule.Loop("serverName", server_name_frequency, func() {
 		name.ChangeServerName(session)
+	})
+
+	schedule.Loop("voteUpdate", vote_update_frequency, func() {
+		voting.UpdateVoting(session)
 	})
 
 	err = session.UpdateGameStatus(10, "The Binding of Isaac: Antibirth")
