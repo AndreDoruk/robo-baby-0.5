@@ -17,7 +17,7 @@ import (
 var channel_id string = os.Getenv("VOTING_CHANNEL_ID")
 
 const vote_duration time.Duration = 12 * time.Hour
-const for_each_compare float64 = -2
+const for_each_compare float64 = -10000000
 
 const min_ratio_go_through float32 = 70 / 30
 const overwhelming_difference_ratio float32 = 90 / 10
@@ -61,6 +61,7 @@ func CreateVote(session *discordgo.Session, userId string) error {
 	}
 
 	store.Insert(userId, vote)
+	store.Close()
 
 	return nil
 }
@@ -68,46 +69,48 @@ func CreateVote(session *discordgo.Session, userId string) error {
 func UpdateVoting(session *discordgo.Session) {
 	store, err := bolthold.Open("db/votes.db", 0666, nil)
 
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	fmt.Println(store.Count(Vote{}, bolthold.Where("LastHour").Gt(for_each_compare)))
+
+	store.ForEach(bolthold.Where("LastHour").Gt(for_each_compare), func(vote *Vote) error {
+		go updateVote(session, vote, *store)
+		return nil
+	})
+}
+
+func updateVote(session *discordgo.Session, vote *Vote, store bolthold.Store) {
+	message, err := session.ChannelMessage(channel_id, vote.MessageId)
 
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	store.ForEach(bolthold.Where("LastHour").Gt(for_each_compare), func(vote *Vote) error {
-		message, err := session.ChannelMessage(channel_id, vote.MessageId)
+	remainingTime := time.Until(vote.TimeStarted.Add(vote_duration))
+	overwhelmingDifference := overwhelmingDifferenceInVotes(message)
+
+	fmt.Println("C!")
+
+	if remainingTime.Minutes() > 0 && !overwhelmingDifference {
+		hours := math.Floor(remainingTime.Hours())
+
+		if !(hours > 1 && vote.LastHour == hours) {
+			go editImageTimestamp(session, message, math.Floor(remainingTime.Minutes()))
+			vote.LastHour = hours
+		}
+
+		store.Update(vote.UserId, vote)
+	} else {
+		go finishVote(session, message, vote)
+
+		err = store.Delete(vote.UserId, Vote{})
 
 		if err != nil {
 			log.Fatalln(err)
 		}
-
-		remainingTime := time.Until(vote.TimeStarted.Add(vote_duration))
-		overwhelmingDifference := overwhelmingDifferenceInVotes(message)
-
-		fmt.Println(remainingTime, overwhelmingDifference)
-
-		if remainingTime.Minutes() > 0 && !overwhelmingDifference {
-			hours := math.Floor(remainingTime.Hours())
-
-			if !(hours > 1 && vote.LastHour == hours) {
-				go editImageTimestamp(session, message, math.Floor(remainingTime.Minutes()))
-				vote.LastHour = hours
-			}
-
-			store.Update(vote.UserId, vote)
-		} else {
-			go finishVote(session, message, vote)
-			err = store.Delete(vote.UserId, vote)
-
-			if err != nil {
-				log.Fatalln(err)
-			}
-		}
-
-		return nil
-	})
-
-	store.Close()
+	}
 }
 
 func overwhelmingDifferenceInVotes(message *discordgo.Message) bool {
@@ -138,6 +141,8 @@ func finishVote(session *discordgo.Session, message *discordgo.Message, vote *Vo
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	defer store.Close()
 
 	votesFavor, votesAgainst := getFavorAndAgainstVotes(message)
 	ratio := float32(votesFavor) / float32(votesAgainst)

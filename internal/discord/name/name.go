@@ -23,6 +23,10 @@ var server_names = []string{
 	"I REMEMBERED THE FABLES",
 	"the entirety of america",
 	"piss",
+	"green isaac commits modded murder",
+	"fiend and green isaac making out in the basement",
+	"sheriff executes your family (real)",
+	"Botting of Isaac",
 }
 
 func ChangeServerName(session *discordgo.Session) {
