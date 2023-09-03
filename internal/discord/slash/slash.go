@@ -68,6 +68,7 @@ func OnInteract(session *discordgo.Session, interaction *discordgo.InteractionCr
 			voting.CreateVote(session, userId.(string))
 
 			respondInteraction(session, interaction, "Successfuly started vote")
+			logging.Log(session, commandData.Name+" used by "+interaction.User.Username)
 		}
 
 	case whitelist_command.Name:
@@ -90,7 +91,9 @@ func OnInteract(session *discordgo.Session, interaction *discordgo.InteractionCr
 			} else {
 				respondInteraction(session, interaction, "Error when whitelisting user: "+err.Error())
 			}
+			logging.Log(session, commandData.Name+" used by "+interaction.User.Username)
 		}
+
 	case whitelist_all_command.Name:
 		{
 			guild, err := session.Guild(server_id)
@@ -111,10 +114,10 @@ func OnInteract(session *discordgo.Session, interaction *discordgo.InteractionCr
 			}
 
 			respondInteraction(session, interaction, "Sucessfuly whitelisted everyone in the server")
+			logging.Log(session, commandData.Name+" used by "+interaction.User.Username)
 		}
 	}
 
-	logging.Log(session, commandData.Name+" used by "+interaction.User.Username)
 }
 
 func respondInteraction(session *discordgo.Session, interaction *discordgo.InteractionCreate, text string) {
