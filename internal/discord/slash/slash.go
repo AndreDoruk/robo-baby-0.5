@@ -6,6 +6,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/timshannon/bolthold"
+	"github.com/trustig/robobaby0.5/internal/discord/logging"
 	"github.com/trustig/robobaby0.5/internal/discord/voting"
 	"github.com/trustig/robobaby0.5/internal/discord/whitelist"
 )
@@ -84,6 +85,7 @@ func OnInteract(session *discordgo.Session, interaction *discordgo.InteractionCr
 		}
 	}
 
+	logging.Log(session, commandData.Name+" used by "+interaction.User.Username)
 }
 
 func respondInteraction(session *discordgo.Session, interaction *discordgo.InteractionCreate, text string) {
