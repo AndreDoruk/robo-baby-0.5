@@ -10,6 +10,7 @@ import (
 type Whitelist struct {
 	FavorVotes   int
 	AgainstVotes int
+	UserId       string
 }
 
 func OnJoin(session *discordgo.Session, event *discordgo.GuildMemberAdd) {
@@ -23,7 +24,7 @@ func OnJoin(session *discordgo.Session, event *discordgo.GuildMemberAdd) {
 	defer store.Close()
 
 	var whitelist Whitelist
-	err = store.Get(event.User.ID, &whitelist)
+	err = store.Find(&whitelist, bolthold.Where("UserId").Eq(event.User.ID))
 
 	if err != nil {
 		fmt.Println(err)

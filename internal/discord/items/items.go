@@ -35,13 +35,11 @@ func SendWorkshopItems(session *discordgo.Session, items []workshop.WorkshopItem
 
 	for _, reader := range readers {
 		url := upload.UploadFileAndReturnUrl(session, "workshopItem.png", reader)
-		message, err := session.ChannelMessageSend(channel_id, url)
+		_, err := session.ChannelMessageSend(channel_id, url)
 
 		if err != nil {
 			log.Fatalln(err)
 		}
-
-		session.MessageReactionAdd(channel_id, message.ID, "🍅")
 	}
 }
 
@@ -49,11 +47,9 @@ func SendWorkshopItem(session *discordgo.Session, channelId string, item worksho
 	reader := images.ImageToBytesReader(images.CreateWorkshopImage(item))
 	url := upload.UploadFileAndReturnUrl(session, "workshopItem.png", reader)
 
-	message, err := session.ChannelMessageSend(channelId, url)
+	_, err := session.ChannelMessageSend(channelId, url)
 
 	if err != nil {
 		log.Fatalln(err)
 	}
-
-	session.MessageReactionAdd(channelId, message.ID, "🍅")
 }

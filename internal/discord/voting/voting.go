@@ -31,13 +31,13 @@ type Vote struct {
 	Finished    bool
 }
 
-func CreateVote(session *discordgo.Session, userId string) {
+func CreateVote(session *discordgo.Session, userId string) error {
 	//TODO: Stop from creating vote for whitelisted user
 	user, err := session.User(userId)
 
 	if err != nil {
 		fmt.Println(err)
-		return
+		return err
 	}
 
 	image := images.CreateVoteImage(session, user)
@@ -60,7 +60,9 @@ func CreateVote(session *discordgo.Session, userId string) {
 		log.Fatalln(err)
 	}
 
-	store.Insert(userId, vote)
+	store.Insert(bolthold.NextSequence(), vote)
+
+	return nil
 }
 
 func UpdateVoting(session *discordgo.Session) {
@@ -140,9 +142,10 @@ func finishVote(session *discordgo.Session, message *discordgo.Message, vote *Vo
 		whitelist := whitelist.Whitelist{
 			FavorVotes:   votesFavor,
 			AgainstVotes: votesAgainst,
+			UserId:       vote.UserId,
 		}
 
-		err = store.Insert(vote.UserId, whitelist)
+		err = store.Insert(bolthold.NextSequence(), whitelist)
 
 		if err != nil {
 			log.Fatalln(err)

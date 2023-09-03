@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -59,6 +60,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	fmt.Println("Bot online")
 	for {
 	}
 }
