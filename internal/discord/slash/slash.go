@@ -1,6 +1,7 @@
 package slash
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -39,11 +40,18 @@ var whitelist_command *discordgo.ApplicationCommand = &discordgo.ApplicationComm
 	},
 }
 
+var whitelist_all_command *discordgo.ApplicationCommand = &discordgo.ApplicationCommand{
+	Name:        "whitelist-all",
+	Type:        discordgo.ChatApplicationCommand,
+	Description: "Whitelist everyone currently on the server",
+}
+
 func CreateCommands(session *discordgo.Session) {
 	appId := session.State.Application.ID
 
 	session.ApplicationCommandCreate(appId, server_id, vote_command)
 	session.ApplicationCommandCreate(appId, server_id, whitelist_command)
+	session.ApplicationCommandCreate(appId, server_id, whitelist_all_command)
 }
 
 func OnInteract(session *discordgo.Session, interaction *discordgo.InteractionCreate) {
@@ -82,6 +90,27 @@ func OnInteract(session *discordgo.Session, interaction *discordgo.InteractionCr
 			} else {
 				respondInteraction(session, interaction, "Error when whitelisting user: "+err.Error())
 			}
+		}
+	case whitelist_all_command.Name:
+		{
+			guild, err := session.Guild(server_id)
+
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+			store, err := bolthold.Open("db/whitelist.db", 0666, nil)
+
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+			for _, member := range guild.Members {
+				store.Insert(member.User.ID, whitelist.Whitelist{FavorVotes: -1, AgainstVotes: -1})
+				fmt.Println("Whitelisted " + member.User.Username)
+			}
+
+			respondInteraction(session, interaction, "Sucessfuly whitelisted everyone in the server")
 		}
 	}
 
