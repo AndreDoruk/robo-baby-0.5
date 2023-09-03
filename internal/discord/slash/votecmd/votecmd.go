@@ -1,4 +1,4 @@
-package vote
+package votecmd
 
 import (
 	"github.com/bwmarrin/discordgo"

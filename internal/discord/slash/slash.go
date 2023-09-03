@@ -6,9 +6,11 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/trustig/robobaby0.5/internal/discord/logging"
-	"github.com/trustig/robobaby0.5/internal/discord/slash/vote"
-	"github.com/trustig/robobaby0.5/internal/discord/slash/whitelist"
-	"github.com/trustig/robobaby0.5/internal/discord/slash/whitelistall"
+	"github.com/trustig/robobaby0.5/internal/discord/slash/registervotecmd"
+	"github.com/trustig/robobaby0.5/internal/discord/slash/votecmd"
+	"github.com/trustig/robobaby0.5/internal/discord/slash/whitelistallcmd"
+	"github.com/trustig/robobaby0.5/internal/discord/slash/whitelistcmd"
+	"github.com/trustig/robobaby0.5/internal/discord/slash/whitelistedcmd"
 )
 
 var server_id string = os.Getenv("SERVER_ID")
@@ -21,9 +23,11 @@ type Command struct {
 }
 
 var commands = map[string]Command{
-	"vote":          Command{vote.COMMAND, vote.Command},
-	"whitelist":     Command{whitelist.COMMAND, whitelist.Command},
-	"whitelist-all": Command{whitelistall.COMMAND, whitelistall.Command},
+	"vote":          Command{votecmd.COMMAND, votecmd.Command},
+	"whitelist":     Command{whitelistcmd.COMMAND, whitelistcmd.Command},
+	"whitelist-all": Command{whitelistallcmd.COMMAND, whitelistallcmd.Command},
+	"whitelisted":   Command{whitelistedcmd.COMMAND, whitelistedcmd.Command},
+	"register-vote": Command{registervotecmd.COMMAND, registervotecmd.Command},
 }
 
 func CreateCommands(session *discordgo.Session) {

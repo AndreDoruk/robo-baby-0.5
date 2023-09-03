@@ -17,6 +17,7 @@ import (
 var channel_id string = os.Getenv("VOTING_CHANNEL_ID")
 
 const vote_duration time.Duration = 12 * time.Hour
+const for_each_compare float64 = -2
 
 const min_ratio_go_through float32 = 70 / 30
 const overwhelming_difference_ratio float32 = 90 / 10
@@ -28,7 +29,6 @@ type Vote struct {
 	UserId      string
 	TimeStarted time.Time
 	LastHour    float64
-	Finished    bool
 }
 
 func CreateVote(session *discordgo.Session, userId string) error {
@@ -52,7 +52,7 @@ func CreateVote(session *discordgo.Session, userId string) error {
 		log.Fatalln(err)
 	}
 
-	vote := Vote{message.ID, userId, time.Now(), -1, false}
+	vote := Vote{message.ID, userId, time.Now(), -1}
 
 	store, err := bolthold.Open("db/votes.db", 0666, nil)
 
@@ -60,7 +60,7 @@ func CreateVote(session *discordgo.Session, userId string) error {
 		log.Fatalln(err)
 	}
 
-	store.Insert(bolthold.NextSequence(), vote)
+	store.Insert(userId, vote)
 
 	return nil
 }
@@ -68,11 +68,13 @@ func CreateVote(session *discordgo.Session, userId string) error {
 func UpdateVoting(session *discordgo.Session) {
 	store, err := bolthold.Open("db/votes.db", 0666, nil)
 
+	fmt.Println(store.Count(Vote{}, bolthold.Where("LastHour").Gt(for_each_compare)))
+
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	store.ForEach(bolthold.Where("Finished").Eq(false), func(vote *Vote) {
+	store.ForEach(bolthold.Where("LastHour").Gt(for_each_compare), func(vote *Vote) error {
 		message, err := session.ChannelMessage(channel_id, vote.MessageId)
 
 		if err != nil {
@@ -81,6 +83,8 @@ func UpdateVoting(session *discordgo.Session) {
 
 		remainingTime := time.Until(vote.TimeStarted.Add(vote_duration))
 		overwhelmingDifference := overwhelmingDifferenceInVotes(message)
+
+		fmt.Println(remainingTime, overwhelmingDifference)
 
 		if remainingTime.Minutes() > 0 && !overwhelmingDifference {
 			hours := math.Floor(remainingTime.Hours())
@@ -99,6 +103,8 @@ func UpdateVoting(session *discordgo.Session) {
 				log.Fatalln(err)
 			}
 		}
+
+		return nil
 	})
 
 	store.Close()
@@ -145,7 +151,7 @@ func finishVote(session *discordgo.Session, message *discordgo.Message, vote *Vo
 			UserId:       vote.UserId,
 		}
 
-		err = store.Insert(bolthold.NextSequence(), whitelist)
+		err = store.Insert(vote.UserId, whitelist)
 
 		if err != nil {
 			log.Fatalln(err)

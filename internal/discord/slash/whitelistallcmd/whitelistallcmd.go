@@ -1,9 +1,10 @@
-package whitelistall
+package whitelistallcmd
 
 import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/timshannon/bolthold"
@@ -19,22 +20,31 @@ var COMMAND *discordgo.ApplicationCommand = &discordgo.ApplicationCommand{
 }
 
 func Command(session *discordgo.Session, commandData discordgo.ApplicationCommandInteractionData, interaction *discordgo.InteractionCreate) string {
-	guild, err := session.Guild(server_id)
-
-	if err != nil {
-		log.Fatalln(err)
-	}
-
 	store, err := bolthold.Open("db/whitelist.db", 0666, nil)
 
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	for _, member := range guild.Members {
-		store.Insert(member.User.ID, whitelist.Whitelist{FavorVotes: -1, AgainstVotes: -1, UserId: member.User.ID})
-		fmt.Println("Whitelisted " + member.User.Username)
+	defer store.Close()
+
+	members, err := session.GuildMembers(server_id, "2006", 1000)
+
+	if err != nil {
+		log.Fatalln(err)
 	}
 
-	return "Successfuly whitelisted all users"
+	for _, member := range members {
+		if member.User.Bot {
+			continue
+		}
+
+		err = store.Insert(member.User.ID, whitelist.Whitelist{FavorVotes: -1, AgainstVotes: -1, UserId: member.User.ID})
+
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+
+	return "Successfuly whitelisted all " + strconv.Itoa(len(members)) + " users"
 }

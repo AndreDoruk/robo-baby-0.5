@@ -1,4 +1,4 @@
-package whitelist
+package whitelistcmd
 
 import (
 	"log"
@@ -32,12 +32,14 @@ func Command(session *discordgo.Session, commandData discordgo.ApplicationComman
 		log.Fatalln(err)
 	}
 
+	defer store.Close()
+
 	userId := commandData.Options[0].Value.(string)
 	err = store.Insert(userId, whitelist.Whitelist{FavorVotes: -1, AgainstVotes: -1, UserId: userId})
 
 	if err != nil {
 		return "Error while whitelisting user: " + err.Error()
 	} else {
-		return "Succesfuly whitelisted user"
+		return "Succesfuly whitelisted user <@" + userId + ">"
 	}
 }
