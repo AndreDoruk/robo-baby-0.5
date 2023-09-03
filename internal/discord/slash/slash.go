@@ -57,6 +57,8 @@ func OnInteract(session *discordgo.Session, interaction *discordgo.InteractionCr
 
 			userId := commandData.Options[0].Value
 			voting.CreateVote(session, userId.(string))
+
+			respondInteraction(session, interaction, "Successfuly started vote")
 		}
 
 	case whitelist_command.Name:
