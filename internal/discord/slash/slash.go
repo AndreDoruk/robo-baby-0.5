@@ -72,8 +72,24 @@ func OnInteract(session *discordgo.Session, interaction *discordgo.InteractionCr
 			}
 
 			userId := commandData.Options[0].Value
-			store.Insert(userId, whitelist.Whitelist{FavorVotes: 69, AgainstVotes: 420})
+			err = store.Insert(userId, whitelist.Whitelist{FavorVotes: 69, AgainstVotes: 420})
+
+			if err == nil {
+				respondInteraction(session, interaction, "Sucessfuly whitelisted user")
+			} else {
+				respondInteraction(session, interaction, "Error when whitelisting user: "+err.Error())
+			}
 		}
 	}
 
+}
+
+func respondInteraction(session *discordgo.Session, interaction *discordgo.InteractionCreate, text string) {
+	session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Content:         text,
+			AllowedMentions: &discordgo.MessageAllowedMentions{},
+		},
+	})
 }
