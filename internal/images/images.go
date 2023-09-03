@@ -116,7 +116,7 @@ func CreateVoteImage(session *discordgo.Session, user *discordgo.User) image.Ima
 
 	drawText(context, join_vote_text, join_vote_x, join_vote_y, join_vote_size, WHITE_COLOR)
 	drawText(context, user.Username, username_x, username_y, username_size, WHITE_COLOR)
-	drawText(context, time_prefix+"24"+hour_suffix, time_x, time_y, time_size, WHITE_COLOR)
+	drawText(context, time_prefix+"12"+hour_suffix, time_x, time_y, time_size, WHITE_COLOR)
 
 	return context.Image()
 }

@@ -78,8 +78,9 @@ func UpdateVoting(session *discordgo.Session) {
 		}
 
 		remainingTime := time.Until(vote.TimeStarted.Add(vote_duration))
+		overwhelmingDifference := overwhelmingDifferenceInVotes(message)
 
-		if remainingTime.Minutes() > 0 && !overwhelmingDifferenceInVotes(message) {
+		if remainingTime.Minutes() > 0 && !overwhelmingDifference {
 			hours := math.Floor(remainingTime.Hours())
 
 			if !(hours > 1 && vote.LastHour == hours) {
