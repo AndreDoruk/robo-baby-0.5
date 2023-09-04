@@ -41,6 +41,7 @@ func main() {
 	}
 
 	slash.CreateCommands(session)
+	voting.UpdateVoting(session)
 
 	schedule.Loop("workshopItems", update_items_frequency, func() {
 		items.SendWorkshopItems(session, workshop.GetMostPopularItems())

@@ -56,9 +56,9 @@ func CreateVote(session *discordgo.Session, userId string) error {
 	vote := Vote{message.ID, userId, time.Now(), -1}
 
 	votes := make(map[string]Vote)
-	database.LoadJson("./db/votes.json", &votes)
+	database.LoadJson("db/votes.json", &votes)
 
-	defer database.SaveJson("./db/votes.json", votes)
+	defer database.SaveJson("db/votes.json", votes)
 
 	if err != nil {
 		log.Fatalln(err)
@@ -72,15 +72,15 @@ func CreateVote(session *discordgo.Session, userId string) error {
 func UpdateVoting(session *discordgo.Session) {
 	votes := make(map[string]Vote)
 
-	database.LoadJson("votes.json", &votes)
-	defer database.SaveJson("votes.json", votes)
+	database.LoadJson("db/votes.json", &votes)
+	defer database.SaveJson("db/votes.json", votes)
 
 	for _, vote := range votes {
-		go updateVote(session, vote, &votes)
+		votes = updateVote(session, vote, votes)
 	}
 }
 
-func updateVote(session *discordgo.Session, vote Vote, votes *map[string]Vote) {
+func updateVote(session *discordgo.Session, vote Vote, votes map[string]Vote) map[string]Vote {
 	message, err := session.ChannelMessage(channel_id, vote.MessageId)
 
 	if err != nil {
@@ -98,12 +98,14 @@ func updateVote(session *discordgo.Session, vote Vote, votes *map[string]Vote) {
 			vote.LastHour = hours
 		}
 
-		(*votes)[vote.UserId] = vote
+		votes[vote.UserId] = vote
 	} else {
 		go finishVote(session, message, vote)
 
-		delete(*votes, vote.UserId)
+		delete(votes, vote.UserId)
 	}
+
+	return votes
 }
 
 func overwhelmingDifferenceInVotes(message *discordgo.Message) bool {

@@ -1,7 +1,6 @@
 package whitelistallcmd
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -36,10 +35,6 @@ func Command(session *discordgo.Session, commandData discordgo.ApplicationComman
 		}
 
 		whitelists[member.User.ID] = whitelist.Whitelist{FavorVotes: -1, AgainstVotes: -1, UserId: member.User.ID}
-
-		if err != nil {
-			fmt.Println(err)
-		}
 	}
 
 	return "Successfuly whitelisted all " + strconv.Itoa(len(members)) + " users"

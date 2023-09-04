@@ -1,7 +1,6 @@
 package registervotecmd
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/bwmarrin/discordgo"
@@ -50,15 +49,12 @@ func Command(session *discordgo.Session, commandData discordgo.ApplicationComman
 	if err != nil {
 		return "Error while trying to create vote: ```yaml\n" + err.Error() + "```"
 	}
-	fmt.Println(3)
-
 	vote := voting.Vote{
 		MessageId:   messageId,
 		UserId:      userId,
 		TimeStarted: message.Timestamp,
 		LastHour:    -1,
 	}
-	fmt.Println(4)
 
 	votes[userId] = vote
 
