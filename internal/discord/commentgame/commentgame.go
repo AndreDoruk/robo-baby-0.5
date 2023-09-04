@@ -1,0 +1,229 @@
+package commentgame
+
+import (
+	"log"
+	"math/rand"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
+
+	"github.com/bwmarrin/discordgo"
+	"github.com/trustig/robobaby0.5/internal/database"
+	"github.com/trustig/robobaby0.5/internal/workshop"
+)
+
+const item_num int = 4
+
+type CommentGame struct {
+	PlayerID      string
+	WorkshopItems []workshop.WorkshopItem
+	CorrectItem   workshop.WorkshopItem
+	MessageID     string
+}
+
+const seconds int = 15
+
+var currentGames map[string]CommentGame = make(map[string]CommentGame)
+
+func OnInteract(session *discordgo.Session, interaction *discordgo.InteractionCreate) {
+	if interaction.Type != discordgo.InteractionMessageComponent {
+		return
+	}
+
+	game, isCommentGame := currentGames[interaction.Message.ID]
+
+	if !isCommentGame {
+		return
+	}
+
+	if interaction.Member.User.ID != game.PlayerID {
+		session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseDeferredChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content:         "this isn't your battle to fight....",
+				AllowedMentions: &discordgo.MessageAllowedMentions{Users: []string{interaction.Member.User.ID}, RepliedUser: true},
+			},
+		})
+		return
+	}
+
+	session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponsePong,
+	})
+
+	selectedOption := interaction.Interaction.Data.(discordgo.MessageComponentInteractionData).CustomID
+	endGame(session, interaction.Message, selectedOption == game.CorrectItem.Name)
+}
+
+func Begin(session *discordgo.Session, interaction *discordgo.InteractionCreate) {
+	workshopItems, comment, correctItem := getGameItemsCommentAndCorrect()
+
+	var components []discordgo.MessageComponent
+
+	for _, item := range workshopItems {
+		components = append(components, discordgo.Button{
+			Label:    item.Name,
+			Style:    discordgo.SecondaryButton,
+			Disabled: false,
+			CustomID: item.Name,
+		})
+	}
+
+	message, err := session.ChannelMessageSendComplex(interaction.ChannelID, &discordgo.MessageSend{
+		Embed: &discordgo.MessageEmbed{
+			Author:      &discordgo.MessageEmbedAuthor{IconURL: comment.IconURL, Name: comment.Creator + " says: "},
+			Description: comment.Comment,
+			Color:       rand.Intn(16777215),
+			Footer:      &discordgo.MessageEmbedFooter{IconURL: interaction.Member.AvatarURL("128"), Text: interaction.Member.Nick + " is playing [" + strconv.Itoa(seconds) + " second(s) remaining]"},
+		},
+
+		Components: []discordgo.MessageComponent{
+			discordgo.ActionsRow{Components: components},
+		},
+	})
+
+	if err != nil {
+		session.ChannelMessageSend(interaction.ChannelID, "Error: ```go\n"+err.Error()+"```")
+		return
+	}
+
+	currentGame := CommentGame{
+		PlayerID:      interaction.Member.User.ID,
+		WorkshopItems: workshopItems,
+		CorrectItem:   correctItem,
+		MessageID:     message.ID,
+	}
+	currentGames[message.ID] = currentGame
+
+	go loopTimer(session, message, seconds)
+}
+
+func loopTimer(session *discordgo.Session, message *discordgo.Message, seconds int) {
+	for seconds >= 0 {
+		_, exists := currentGames[message.ID]
+		if !exists {
+			return
+		}
+
+		embed := message.Embeds[0]
+
+		prefix := strings.Split(embed.Footer.Text, "[")[0]
+		footerText := prefix + "[" + strconv.Itoa(seconds) + " second(s) remaining]"
+
+		embed.Footer.Text = footerText
+
+		message, _ = session.ChannelMessageEditEmbed(message.ChannelID, message.ID, embed)
+
+		time.Sleep(time.Second)
+		seconds -= 1
+	}
+
+	endGame(session, message, false)
+}
+
+func endGame(session *discordgo.Session, message *discordgo.Message, victory bool) {
+	game, exists := currentGames[message.ID]
+
+	if !exists {
+		return
+	}
+
+	originalEmbed := message.Embeds[0]
+
+	prefix := strings.Split(originalEmbed.Footer.Text, "[")[0]
+	originalEmbed.Footer.Text = prefix + "[Over!]"
+
+	actionsRow := message.Components[0].(*discordgo.ActionsRow)
+
+	for _, component := range actionsRow.Components {
+		button := component.(*discordgo.Button)
+		button.Disabled = true
+	}
+
+	go func() {
+		time.Sleep(time.Second)
+
+		_, err := session.ChannelMessageEditComplex(&discordgo.MessageEdit{
+			Embed:      originalEmbed,
+			Components: message.Components,
+			ID:         message.ID,
+			Channel:    message.ChannelID,
+		})
+
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}()
+
+	delete(currentGames, message.ID)
+
+	correctItem := game.CorrectItem
+
+	embed := &discordgo.MessageEmbed{
+		Fields: []*discordgo.MessageEmbedField{{
+			Name:  "Answer",
+			Value: "[" + correctItem.Name + "](" + correctItem.URL + ")",
+		}},
+		Color:  originalEmbed.Color,
+		Footer: &discordgo.MessageEmbedFooter{IconURL: originalEmbed.Footer.IconURL, Text: "wow"},
+	}
+
+	if victory {
+		embed.Author = &discordgo.MessageEmbedAuthor{IconURL: "https://cdn.discordapp.com/attachments/1133685184240287806/1148231464824090774/epico-mandela-catalog.gif", Name: "intelligence unrivaled in the modding community"}
+		embed.Description = `you win, good job
+		🍅
+		🫴`
+		embed.Footer.Text = "+1 tomato"
+
+		addTomato(game.PlayerID)
+	} else {
+		embed.Author = &discordgo.MessageEmbedAuthor{IconURL: "https://media.discordapp.net/attachments/954489163820978196/1002423394236637204/edge.gif", Name: "i've seen workshop users smarter than you"}
+		embed.Description = "you lose lol, loser"
+		embed.Footer.Text = "+0 tomatoes"
+	}
+
+	session.ChannelMessageSendEmbedReply(message.ChannelID, embed, message.Reference())
+}
+
+func getGameItemsCommentAndCorrect() ([]workshop.WorkshopItem, workshop.WorkshopComment, workshop.WorkshopItem) {
+	items := make([]workshop.WorkshopItem, 0, item_num)
+
+	var waitGroup sync.WaitGroup
+
+	for i := 0; i < item_num-1; i++ {
+		waitGroup.Add(1)
+
+		go func(i int) {
+			items = append(items, workshop.GetRandomItem())
+			waitGroup.Done()
+		}(i)
+	}
+
+	var comment workshop.WorkshopComment
+	var correctItem workshop.WorkshopItem
+
+	waitGroup.Add(1)
+	go func() {
+		comment, correctItem = workshop.GetRandomCommentAndItem()
+		waitGroup.Done()
+	}()
+
+	waitGroup.Wait()
+
+	correctIndex := rand.Intn(item_num)
+
+	items = append(items[:correctIndex+1], items[correctIndex:]...)
+	items[correctIndex] = correctItem
+
+	return items, comment, correctItem
+}
+
+func addTomato(userId string) {
+	tomatoes := make(map[string]int)
+
+	database.LoadJson("db/balance.json", &tomatoes)
+	defer database.SaveJson("db/balance.json", tomatoes)
+
+	tomatoes[userId] += 1
+}

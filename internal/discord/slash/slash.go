@@ -6,6 +6,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/trustig/robobaby0.5/internal/discord/logging"
+	"github.com/trustig/robobaby0.5/internal/discord/slash/balancecmd"
+	"github.com/trustig/robobaby0.5/internal/discord/slash/commentgamecmd"
 	"github.com/trustig/robobaby0.5/internal/discord/slash/registervotecmd"
 	"github.com/trustig/robobaby0.5/internal/discord/slash/votecmd"
 	"github.com/trustig/robobaby0.5/internal/discord/slash/whitelistallcmd"
@@ -28,6 +30,8 @@ var commands = map[string]Command{
 	"whitelist-all": Command{whitelistallcmd.COMMAND, whitelistallcmd.Command},
 	"whitelisted":   Command{whitelistedcmd.COMMAND, whitelistedcmd.Command},
 	"register-vote": Command{registervotecmd.COMMAND, registervotecmd.Command},
+	"balance":       Command{balancecmd.COMMAND, balancecmd.Command},
+	"comment-game":  Command{commentgamecmd.COMMAND, commentgamecmd.Command},
 }
 
 func CreateCommands(session *discordgo.Session) {
@@ -39,6 +43,10 @@ func CreateCommands(session *discordgo.Session) {
 }
 
 func OnInteract(session *discordgo.Session, interaction *discordgo.InteractionCreate) {
+	if interaction.Type != discordgo.InteractionApplicationCommand {
+		return
+	}
+
 	commandData := interaction.ApplicationCommandData()
 	command, ok := commands[commandData.Name]
 
@@ -50,8 +58,9 @@ func OnInteract(session *discordgo.Session, interaction *discordgo.InteractionCr
 		}()
 
 		response := command.Function(session, commandData, interaction)
-
-		respondInteraction(session, interaction, commandData, response)
+		if response != "" {
+			respondInteraction(session, interaction, commandData, response)
+		}
 
 		logging.LogCommand(session, interaction, commandData)
 	}

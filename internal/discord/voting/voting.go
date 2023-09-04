@@ -94,13 +94,13 @@ func updateVote(session *discordgo.Session, vote Vote, votes map[string]Vote) ma
 		hours := math.Floor(remainingTime.Hours())
 
 		if !(hours > 1 && vote.LastHour == hours) {
-			go editImageTimestamp(session, message, math.Floor(remainingTime.Minutes()))
+			editImageTimestamp(session, message, math.Floor(remainingTime.Minutes()))
 			vote.LastHour = hours
 		}
 
 		votes[vote.UserId] = vote
 	} else {
-		go finishVote(session, message, vote)
+		finishVote(session, message, vote)
 
 		delete(votes, vote.UserId)
 	}
