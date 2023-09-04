@@ -13,9 +13,10 @@ import (
 var server_id string = os.Getenv("SERVER_ID")
 
 var COMMAND *discordgo.ApplicationCommand = &discordgo.ApplicationCommand{
-	Name:        "whitelist-all",
-	Type:        discordgo.ChatApplicationCommand,
-	Description: "Whitelist everyone currently on the server",
+	Name:                     "whitelist-all",
+	Type:                     discordgo.ChatApplicationCommand,
+	Description:              "Whitelist everyone currently on the server",
+	DefaultMemberPermissions: new(int64),
 }
 
 func Command(session *discordgo.Session, commandData discordgo.ApplicationCommandInteractionData, interaction *discordgo.InteractionCreate) string {

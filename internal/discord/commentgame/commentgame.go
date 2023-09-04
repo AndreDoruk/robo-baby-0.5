@@ -26,6 +26,18 @@ const seconds int = 15
 
 var currentGames map[string]CommentGame = make(map[string]CommentGame)
 
+var loss_text = []string{
+	"do you just click a random button",
+	"how are you this dumb bro",
+	"they should kill you with hammers",
+	"i've seen workshop users smarter than you",
+}
+
+var win_text = []string{
+	"intelligence unrivaled in the modding community",
+	"Genius!",
+}
+
 func OnInteract(session *discordgo.Session, interaction *discordgo.InteractionCreate) {
 	if interaction.Type != discordgo.InteractionMessageComponent {
 		return
@@ -53,7 +65,7 @@ func OnInteract(session *discordgo.Session, interaction *discordgo.InteractionCr
 	})
 
 	selectedOption := interaction.Interaction.Data.(discordgo.MessageComponentInteractionData).CustomID
-	endGame(session, interaction.Message, selectedOption == game.CorrectItem.Name)
+	endGame(session, interaction.Message, selectedOption == game.CorrectItem.Name, selectedOption)
 }
 
 func Begin(session *discordgo.Session, interaction *discordgo.InteractionCreate) {
@@ -119,10 +131,10 @@ func loopTimer(session *discordgo.Session, message *discordgo.Message, seconds i
 		seconds -= 1
 	}
 
-	endGame(session, message, false)
+	endGame(session, message, false, "")
 }
 
-func endGame(session *discordgo.Session, message *discordgo.Message, victory bool) {
+func endGame(session *discordgo.Session, message *discordgo.Message, victory bool, selectedButton string) {
 	game, exists := currentGames[message.ID]
 
 	if !exists {
@@ -139,6 +151,10 @@ func endGame(session *discordgo.Session, message *discordgo.Message, victory boo
 	for _, component := range actionsRow.Components {
 		button := component.(*discordgo.Button)
 		button.Disabled = true
+
+		if button.Label == selectedButton {
+			button.Style = discordgo.PrimaryButton
+		}
 	}
 
 	go func() {
@@ -170,7 +186,7 @@ func endGame(session *discordgo.Session, message *discordgo.Message, victory boo
 	}
 
 	if victory {
-		embed.Author = &discordgo.MessageEmbedAuthor{IconURL: "https://cdn.discordapp.com/attachments/1133685184240287806/1148231464824090774/epico-mandela-catalog.gif", Name: "intelligence unrivaled in the modding community"}
+		embed.Author = &discordgo.MessageEmbedAuthor{IconURL: "https://cdn.discordapp.com/attachments/1133685184240287806/1148231464824090774/epico-mandela-catalog.gif", Name: win_text[rand.Intn(len(win_text))]}
 		embed.Description = `you win, good job
 		🍅
 		🫴`
@@ -178,7 +194,7 @@ func endGame(session *discordgo.Session, message *discordgo.Message, victory boo
 
 		addTomato(game.PlayerID)
 	} else {
-		embed.Author = &discordgo.MessageEmbedAuthor{IconURL: "https://media.discordapp.net/attachments/954489163820978196/1002423394236637204/edge.gif", Name: "i've seen workshop users smarter than you"}
+		embed.Author = &discordgo.MessageEmbedAuthor{IconURL: "https://media.discordapp.net/attachments/954489163820978196/1002423394236637204/edge.gif", Name: loss_text[rand.Intn(len(loss_text))]}
 		embed.Description = "you lose lol, loser"
 		embed.Footer.Text = "+0 tomatoes"
 	}

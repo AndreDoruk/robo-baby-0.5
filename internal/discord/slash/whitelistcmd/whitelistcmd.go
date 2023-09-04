@@ -17,6 +17,7 @@ var COMMAND *discordgo.ApplicationCommand = &discordgo.ApplicationCommand{
 			Description: "Id of the user",
 		},
 	},
+	DefaultMemberPermissions: new(int64),
 }
 
 func Command(session *discordgo.Session, commandData discordgo.ApplicationCommandInteractionData, interaction *discordgo.InteractionCreate) string {

@@ -27,6 +27,7 @@ var COMMAND *discordgo.ApplicationCommand = &discordgo.ApplicationCommand{
 			Description: "Id of the message to be turned into a vote",
 		},
 	},
+	DefaultMemberPermissions: new(int64),
 }
 
 func Command(session *discordgo.Session, commandData discordgo.ApplicationCommandInteractionData, interaction *discordgo.InteractionCreate) string {
