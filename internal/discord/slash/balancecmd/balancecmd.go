@@ -26,7 +26,7 @@ func Command(session *discordgo.Session, commandData discordgo.ApplicationComman
 	database.LoadJson("db/balance.json", &balances)
 
 	if len(commandData.Options) == 0 {
-		return "Your balance:" + strconv.Itoa(balances[interaction.Member.User.ID]) + " 🍅"
+		return "Your balance: " + strconv.Itoa(balances[interaction.Member.User.ID]) + " 🍅"
 	} else {
 		userId := commandData.Options[0].StringValue()
 
