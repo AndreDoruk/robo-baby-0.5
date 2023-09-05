@@ -38,6 +38,10 @@ func Command(session *discordgo.Session, commandData discordgo.ApplicationComman
 		return "Bro can you input like an actual number: ```yaml\n" + err.Error() + "```"
 	}
 
+	if gambleNum < 0 {
+		return ":__:"
+	}
+
 	if gambleNum > tomatoes[userId] {
 		return "You lack the sufficient 🍅 to gamble" //BROKE N
 	}

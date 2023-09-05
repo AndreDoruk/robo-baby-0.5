@@ -96,7 +96,7 @@ func Begin(session *discordgo.Session, interaction *discordgo.InteractionCreate)
 	})
 
 	if err != nil {
-		session.ChannelMessageSend(interaction.ChannelID, "Error: ```go\n"+err.Error()+"```")
+		session.ChannelMessageSend(interaction.ChannelID, "```go\n"+err.Error()+"```")
 		return
 	}
 
