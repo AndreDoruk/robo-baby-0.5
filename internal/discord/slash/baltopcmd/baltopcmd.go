@@ -30,7 +30,7 @@ func Command(session *discordgo.Session, commandData discordgo.ApplicationComman
 	sortedTomatoes := sortByValue(tomatoes)
 	leaderboard := ""
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 8; i++ {
 		if len(sortedTomatoes) <= i {
 			continue
 		}

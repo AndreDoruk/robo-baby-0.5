@@ -1,6 +1,7 @@
 package workshop
 
 import (
+	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -123,19 +124,25 @@ func getItemsFromSearch(url string, numItems int) []WorkshopItem {
 }
 
 func GetRandomItem() WorkshopItem {
-	url := random_item_url_prefix + strconv.Itoa(rand.Intn(max_page_num))
-	selection := getPageDocument(url).Find(".workshopItem")
+	for {
+		url := random_item_url_prefix + strconv.Itoa(rand.Intn(max_page_num))
+		selection := getPageDocument(url).Find(".workshopItem")
 
-	var workshopItem WorkshopItem
+		var workshopItem WorkshopItem
 
-	selectionItems := getSelectionItems(selection)
+		selectionItems := getSelectionItems(selection)
+		if len(selectionItems) == 0 {
+			fmt.Println("god is dead")
+			continue
+		}
 
-	selectedItem := selectionItems[rand.Intn(len(selectionItems))]
+		selectedItem := selectionItems[rand.Intn(len(selectionItems))]
 
-	hrefLink := selectedItem.Find("a").AttrOr("href", "https://dontasktoask.com")
-	workshopItem = getItem(hrefLink)
+		hrefLink := selectedItem.Find("a").AttrOr("href", "https://dontasktoask.com")
+		workshopItem = getItem(hrefLink)
 
-	return workshopItem
+		return workshopItem
+	}
 }
 
 func getSelectionItems(selection *goquery.Selection) []*goquery.Selection {

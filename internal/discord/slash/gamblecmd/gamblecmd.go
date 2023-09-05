@@ -39,7 +39,7 @@ func Command(session *discordgo.Session, commandData discordgo.ApplicationComman
 	}
 
 	if gambleNum < 0 {
-		return ":__:"
+		return "🐎"
 	}
 
 	if gambleNum > tomatoes[userId] {
