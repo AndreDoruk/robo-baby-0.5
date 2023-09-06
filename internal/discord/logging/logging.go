@@ -43,3 +43,14 @@ func LogCommand(session *discordgo.Session, interaction *discordgo.InteractionCr
 		log.Fatalln(err)
 	}
 }
+func LogError(session *discordgo.Session, activity string, err error) {
+	_, err = session.ChannelMessageSendEmbed(logging_channel, &discordgo.MessageEmbed{
+		Author:      &discordgo.MessageEmbedAuthor{Name: "Error while " + activity, IconURL: session.State.User.AvatarURL("128")},
+		Color:       rand.Intn(16777215),
+		Description: "```go\n" + err.Error() + "```",
+	})
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+}

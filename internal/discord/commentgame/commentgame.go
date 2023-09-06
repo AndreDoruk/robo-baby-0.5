@@ -31,11 +31,15 @@ var loss_text = []string{
 	"how are you this dumb bro",
 	"they should kill you with hammers",
 	"i've seen workshop users smarter than you",
+	"Does He Know",
 }
 
 var win_text = []string{
 	"intelligence unrivaled in the modding community",
 	"Genius!",
+	"congrat!",
+	"so good",
+	"How does he do it",
 }
 
 func OnInteract(session *discordgo.Session, interaction *discordgo.InteractionCreate) {
@@ -51,17 +55,21 @@ func OnInteract(session *discordgo.Session, interaction *discordgo.InteractionCr
 
 	if interaction.Member.User.ID != game.PlayerID {
 		session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseDeferredChannelMessageWithSource,
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content:         "this isn't your battle to fight....",
 				AllowedMentions: &discordgo.MessageAllowedMentions{Users: []string{interaction.Member.User.ID}, RepliedUser: true},
+				Flags:           discordgo.MessageFlagsEphemeral,
 			},
 		})
 		return
 	}
 
 	session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponsePong,
+		Type: discordgo.InteractionResponseModal,
+		Data: &discordgo.InteractionResponseData{
+			Flags: discordgo.MessageFlagsEphemeral,
+		},
 	})
 
 	selectedOption := interaction.Interaction.Data.(discordgo.MessageComponentInteractionData).CustomID

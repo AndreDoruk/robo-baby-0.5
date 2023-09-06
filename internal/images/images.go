@@ -27,7 +27,11 @@ const tomato_image_path string = "./src/tomato.png"
 const thumbnail_position_x int = 51
 const thumbnail_position_y int = 51
 
+const scale_mul float64 = 0.92
+
+const letters_before_scale int = 12
 const mod_name_size float64 = 90
+
 const mod_name_position_x float64 = 401
 const mod_name_position_y float64 = 157
 
@@ -93,7 +97,7 @@ func CreateWorkshopImage(item workshop.WorkshopItem) image.Image {
 
 	context.DrawImage(getItemThumbnail(item), thumbnail_position_x, thumbnail_position_y)
 
-	drawText(context, item.Name, mod_name_position_x, mod_name_position_y, mod_name_size, WHITE_COLOR)
+	drawText(context, item.Name, mod_name_position_x, mod_name_position_y, getScale(item.Name, mod_name_size), WHITE_COLOR)
 	drawText(context, visitor_prefix+strconv.Itoa(item.Visitors), visitor_position_x, visitor_position_y, stat_size, WHITE_COLOR)
 	drawText(context, subscriber_prefix+strconv.Itoa(item.Subscribers), subscriber_position_x, subscriber_position_y, stat_size, WHITE_COLOR)
 	drawText(context, favorite_prefix+strconv.Itoa(item.Favorites), favorite_position_x, favorite_position_y, stat_size, WHITE_COLOR)
@@ -102,6 +106,16 @@ func CreateWorkshopImage(item workshop.WorkshopItem) image.Image {
 	drawText(context, strconv.Itoa(adoptionRate)+adoption_suffix, adoption_position_x, adoption_position_y, adoption_size, YELLOW_COLOR)
 
 	return context.Image()
+}
+
+func getScale(text string, startingScale float64) float64 {
+	offsetLetters := len(text) - letters_before_scale
+
+	if offsetLetters < 0 {
+		return startingScale
+	}
+
+	return startingScale * math.Pow(scale_mul, float64(offsetLetters))
 }
 
 func CreateVoteImage(session *discordgo.Session, user *discordgo.User) image.Image {
@@ -115,7 +129,7 @@ func CreateVoteImage(session *discordgo.Session, user *discordgo.User) image.Ima
 	context.DrawImage(userAvatar, user_avatar_x, user_avatar_y)
 
 	drawText(context, join_vote_text, join_vote_x, join_vote_y, join_vote_size, WHITE_COLOR)
-	drawText(context, user.Username, username_x, username_y, username_size, WHITE_COLOR)
+	drawText(context, user.Username, username_x, username_y, getScale(user.Username, username_size), WHITE_COLOR)
 	drawText(context, time_prefix+"12"+hour_suffix, time_x, time_y, time_size, WHITE_COLOR)
 
 	return context.Image()
