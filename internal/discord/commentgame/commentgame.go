@@ -24,6 +24,8 @@ type CommentGame struct {
 
 const seconds int = 15
 
+const comment_game_play_again_id = "PLAY_AGAIN_COMMENT_GAME"
+
 var currentGames map[string]CommentGame = make(map[string]CommentGame)
 
 var loss_text = []string{
@@ -49,6 +51,12 @@ func OnInteract(session *discordgo.Session, interaction *discordgo.InteractionCr
 
 	game, isCommentGame := currentGames[interaction.Message.ID]
 
+	selectedOption := interaction.Interaction.Data.(discordgo.MessageComponentInteractionData).CustomID
+
+	if selectedOption == comment_game_play_again_id {
+		Begin(session, interaction)
+	}
+
 	if !isCommentGame {
 		return
 	}
@@ -72,7 +80,6 @@ func OnInteract(session *discordgo.Session, interaction *discordgo.InteractionCr
 		},
 	})
 
-	selectedOption := interaction.Interaction.Data.(discordgo.MessageComponentInteractionData).CustomID
 	endGame(session, interaction.Message, selectedOption == game.CorrectItem.Name, selectedOption)
 }
 
@@ -207,7 +214,18 @@ func endGame(session *discordgo.Session, message *discordgo.Message, victory boo
 		embed.Footer.Text = "+0 tomatoes"
 	}
 
-	session.ChannelMessageSendEmbedReply(message.ChannelID, embed, message.Reference())
+	session.ChannelMessageSendComplex(message.ChannelID, &discordgo.MessageSend{
+		Embed: embed,
+		Components: []discordgo.MessageComponent{discordgo.ActionsRow{
+			Components: []discordgo.MessageComponent{discordgo.Button{
+				Label:    "Play Again",
+				Style:    discordgo.PrimaryButton,
+				Disabled: false,
+				CustomID: comment_game_play_again_id,
+			}},
+		}},
+		Reference: message.Reference(),
+	})
 }
 
 func getGameItemsCommentAndCorrect() ([]workshop.WorkshopItem, workshop.WorkshopComment, workshop.WorkshopItem) {
