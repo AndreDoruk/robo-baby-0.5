@@ -103,7 +103,7 @@ func shouldSplatMessage(session *discordgo.Session, message *discordgo.Message) 
 		return false
 	}
 
-	if message.Timestamp.After(time.Now().Add(splat_window)) {
+	if time.Now().After(message.Timestamp.Add(splat_window)) {
 		return false
 	}
 
