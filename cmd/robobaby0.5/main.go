@@ -63,13 +63,11 @@ func main() {
 		schedule.Loop("voteUpdate", vote_update_frequency, func() {
 			voting.UpdateVoting(session)
 		})
-	}
 
-	fmt.Println("Why")
-	splatting.UpdateSplattedRole(session)
-	schedule.Loop("splattingRole", splatting_role_frequency, func() {
-		splatting.UpdateSplattedRole(session)
-	})
+		schedule.Loop("splattingRole", splatting_role_frequency, func() {
+			splatting.UpdateSplattedRole(session)
+		})
+	}
 
 	err = session.UpdateGameStatus(10, "The Binding of Isaac: Antibirth")
 

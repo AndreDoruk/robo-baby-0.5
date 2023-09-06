@@ -1,7 +1,6 @@
 package splatting
 
 import (
-	"fmt"
 	"math/rand"
 	"os"
 	"strconv"
@@ -142,8 +141,6 @@ func UpdateSplattedRole(session *discordgo.Session) {
 	now := time.Now()
 
 	for userId, endTime := range splattedUsers {
-		fmt.Println(now, endTime)
-
 		if !now.After(endTime) {
 			continue
 		}
