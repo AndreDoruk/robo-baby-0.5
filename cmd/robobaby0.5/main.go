@@ -15,6 +15,7 @@ import (
 	"github.com/trustig/robobaby0.5/internal/discord/splatting"
 	"github.com/trustig/robobaby0.5/internal/discord/voting"
 	"github.com/trustig/robobaby0.5/internal/discord/whitelist"
+	"github.com/trustig/robobaby0.5/internal/discord/starboard"
 	"github.com/trustig/robobaby0.5/internal/schedule"
 	"github.com/trustig/robobaby0.5/internal/workshop"
 )
@@ -37,10 +38,12 @@ func main() {
 
 	if !isTesting {
 		session.AddHandler(whitelist.OnJoin)
+		session.AddHandler(slash.OnInteract)
+		session.AddHandler(commentgame.OnInteract)
+		session.AddHandler(splatting.OnReact)
+		session.AddHandler(starboard.OnReact)
+		session.AddHandler(starboard.OnUnreact)
 	}
-	session.AddHandler(slash.OnInteract)
-	session.AddHandler(commentgame.OnInteract)
-	session.AddHandler(splatting.OnReact)
 
 	session.Open()
 	defer session.Close()

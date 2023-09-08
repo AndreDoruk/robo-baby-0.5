@@ -55,6 +55,10 @@ func OnInteract(session *discordgo.Session, interaction *discordgo.InteractionCr
 
 	if selectedOption == comment_game_play_again_id {
 		Begin(session, interaction)
+
+		session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponsePong,
+		})
 	}
 
 	if !isCommentGame {
@@ -102,7 +106,7 @@ func Begin(session *discordgo.Session, interaction *discordgo.InteractionCreate)
 			Author:      &discordgo.MessageEmbedAuthor{IconURL: comment.IconURL, Name: comment.Creator + " says: "},
 			Description: comment.Comment,
 			Color:       rand.Intn(16777215),
-			Footer:      &discordgo.MessageEmbedFooter{IconURL: interaction.Member.AvatarURL("128"), Text: interaction.Member.Nick + " is playing [" + strconv.Itoa(seconds) + " second(s) remaining]"},
+			Footer:      &discordgo.MessageEmbedFooter{IconURL: interaction.Member.AvatarURL("128"), Text: interaction.Member.User.Username + " is playing [" + strconv.Itoa(seconds) + " second(s) remaining]"},
 		},
 
 		Components: []discordgo.MessageComponent{

@@ -76,7 +76,7 @@ func respondInteraction(session *discordgo.Session, interaction *discordgo.Inter
 		Data: &discordgo.InteractionResponseData{
 			Embeds: []*discordgo.MessageEmbed{
 				{
-					Author:      &discordgo.MessageEmbedAuthor{Name: interaction.Member.Nick + " used '/" + commandData.Name + "'", IconURL: interaction.Member.User.AvatarURL("128")},
+					Author:      &discordgo.MessageEmbedAuthor{Name: interaction.Member.User.Username + " used '/" + commandData.Name + "'", IconURL: interaction.Member.User.AvatarURL("128")},
 					Color:       rand.Intn(16777215),
 					Description: text,
 				},

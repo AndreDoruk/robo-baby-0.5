@@ -27,7 +27,7 @@ const tomato_image_path string = "./src/tomato.png"
 const thumbnail_position_x int = 51
 const thumbnail_position_y int = 51
 
-const scale_mul float64 = 0.92
+const scale_mul float64 = 0.99
 
 const letters_before_scale int = 12
 const mod_name_size float64 = 90
@@ -129,7 +129,7 @@ func CreateVoteImage(session *discordgo.Session, user *discordgo.User) image.Ima
 	context.DrawImage(userAvatar, user_avatar_x, user_avatar_y)
 
 	drawText(context, join_vote_text, join_vote_x, join_vote_y, join_vote_size, WHITE_COLOR)
-	drawText(context, user.Username, username_x, username_y, getScale(user.Username, username_size), WHITE_COLOR)
+	drawText(context, user.String(), username_x, username_y, getScale(user.Username, username_size), WHITE_COLOR)
 	drawText(context, time_prefix+"12"+hour_suffix, time_x, time_y, time_size, WHITE_COLOR)
 
 	return context.Image()

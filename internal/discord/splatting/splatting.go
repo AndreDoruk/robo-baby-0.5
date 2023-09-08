@@ -8,6 +8,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/trustig/robobaby0.5/internal/database"
+	"github.com/trustig/robobaby0.5/internal/discord/starboard"
 	"github.com/trustig/robobaby0.5/internal/discord/logging"
 )
 
@@ -78,6 +79,11 @@ func OnReact(session *discordgo.Session, reactionAdd *discordgo.MessageReactionA
 		}},
 		Color: rand.Intn(16777215),
 	}, message.Reference())
+
+	starboard.SendBoardMessage(session, message, &discordgo.MessageEmbedFooter{
+			IconURL: "https://media.tenor.com/Ix7ojVpGhRUAAAAC/tomato-explode.gif",
+			Text: "Splatted!",
+	})
 
 	if err != nil {
 		logging.LogError(session, "splatting message (sending embed) "+reactionAdd.MessageID, err)

@@ -10,7 +10,6 @@ import (
 	"sync"
 
 	"github.com/PuerkitoBio/goquery"
-	//"github.com/boltdb/bolt"
 )
 
 const workshop_item_url string = "https://steamcommunity.com/sharedfiles/filedetails/?id="
@@ -18,7 +17,7 @@ const weekly_most_popular_url string = "https://steamcommunity.com/workshop/brow
 const random_item_url_prefix string = "https://steamcommunity.com/workshop/browse/?appid=250900&browsesort=trend&section=readytouseitems&actualsort=trend&days=7&p=3"
 
 const weekly_item_num int = 9
-const max_page_num int = 100
+const max_page_num int = 50
 
 const selection_item_num = 31
 

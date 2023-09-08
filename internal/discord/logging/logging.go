@@ -34,7 +34,7 @@ func LogCommand(session *discordgo.Session, interaction *discordgo.InteractionCr
 	}
 
 	_, err := session.ChannelMessageSendEmbed(logging_channel, &discordgo.MessageEmbed{
-		Author: &discordgo.MessageEmbedAuthor{Name: interaction.Member.User.Username, IconURL: interaction.Member.User.AvatarURL("128")},
+		Author: &discordgo.MessageEmbedAuthor{Name: "<@" + interaction.Member.User.ID + ">", IconURL: interaction.Member.User.AvatarURL("128")},
 		Color:  rand.Intn(16777215),
 		Fields: messageFields,
 	})
