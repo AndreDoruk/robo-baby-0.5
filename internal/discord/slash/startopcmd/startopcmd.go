@@ -96,7 +96,7 @@ func getTopMessages(session *discordgo.Session, boardArray []ArrayMessage) strin
 
 	returnString := ""
 
-	for index := 0.0; index < math.Min(float64(leaderboard_entry_num), float64(len(boardArray)-1)); index++ {
+	for index := 0.0; index < math.Min(float64(leaderboard_entry_num), float64(len(boardArray))); index++ {
 		message := boardArray[int(index)]
 		returnString += "[Message by](" + message_url_prefix + server_id + "/" + message.StarredMessage.ChannelID + "/" + message.MessageID + ") <@" + message.StarredMessage.UserID + "> - " + strconv.Itoa(message.StarredMessage.StarNum) + " <:quality5:1146794549210001511>\n"
 	}
@@ -123,7 +123,7 @@ func getTopRecievers(boardArray []ArrayMessage) string {
 
 	returnString := ""
 
-	for index := 0.0; index < math.Min(float64(leaderboard_entry_num), float64(len(boardArray)-1)); index++ {
+	for index := 0.0; index < math.Min(float64(leaderboard_entry_num), float64(len(boardArray))); index++ {
 		user := sortedUsers[int(index)]
 		returnString += "<@" + user.UserID + "> - " + strconv.Itoa(user.StarNum) + " <:quality5:1146794549210001511> \n"
 	}
