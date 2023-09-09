@@ -38,11 +38,11 @@ func main() {
 
 	if !isTesting {
 		session.AddHandler(whitelist.OnJoin)
-		session.AddHandler(slash.OnInteract)
 		session.AddHandler(commentgame.OnInteract)
 		session.AddHandler(splatting.OnReact)
-		session.AddHandler(starboard.OnReact)
 		session.AddHandler(starboard.OnUnreact)
+		session.AddHandler(slash.OnInteract)
+		session.AddHandler(starboard.OnReact)
 	}
 
 	session.Open()

@@ -34,7 +34,14 @@ const tenor_link string = "https://tenor.com/"
 const emoji_name string = "quality5"
 const min_reaction_num int = 3
 
-const message_url_prefix string = "https://discordapp.com/channels"
+const message_url_prefix string = "https://discordapp.com/channels/"
+
+type StarredMessage struct {
+	UserID             string
+	ChannelID          string
+	StarboardMessageID string
+	StarNum            int
+}
 
 func OnReact(session *discordgo.Session, reactionAdd *discordgo.MessageReactionAdd) {
 	if !(reactionAdd.Emoji.Name == emoji_name) {
@@ -54,22 +61,27 @@ func OnReact(session *discordgo.Session, reactionAdd *discordgo.MessageReactionA
 		return
 	}
 
-	boardMessages := make(map[string]string)
+	boardMessages := make(map[string]StarredMessage)
 	database.LoadJson("db/boardmessages.json", &boardMessages)
 	defer database.SaveJson("db/boardmessages.json", boardMessages)
 
-	messageId, exists := boardMessages[message.ID]
+	boardMessage, exists := boardMessages[message.ID]
 	if !exists {
-		messageId = SendBoardMessage(session, message, &discordgo.MessageEmbedFooter{
+		messageId := SendBoardMessage(session, message, &discordgo.MessageEmbedFooter{
 			IconURL: "https://cdn.discordapp.com/attachments/1146774215127744533/1149431894912544868/fbac9e72-de98-45d2-9089-4d471f6783be.png",
 			Text:    strconv.Itoa(q5Num),
 		})
+
 		if messageId == "" {
 			return
 		}
-		boardMessages[message.ID] = messageId
+
+		boardMessages[message.ID] = StarredMessage{message.Author.ID, message.ChannelID, messageId, q5Num}
 	} else {
-		editBoardMessage(session, messageId, q5Num)
+		editBoardMessage(session, boardMessage.StarboardMessageID, q5Num)
+
+		boardMessage.StarNum = q5Num
+		boardMessages[message.ID] = boardMessage
 	}
 }
 
@@ -127,7 +139,7 @@ func addFields(session *discordgo.Session, message *discordgo.Message, embed dis
 	}
 
 	embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
-		Value: "[Message](" + message_url_prefix + "/" + server_id + "/" + message.ChannelID + "/" + message.ID + ")",
+		Value: "[Message](" + message_url_prefix + server_id + "/" + message.ChannelID + "/" + message.ID + ")",
 	})
 
 	return embed
@@ -244,14 +256,20 @@ func OnUnreact(session *discordgo.Session, reactionRemove *discordgo.MessageReac
 		return
 	}
 
-	boardMessages := make(map[string]string)
+	boardMessages := make(map[string]StarredMessage)
 	database.LoadJson("db/boardmessages.json", &boardMessages)
 	defer database.SaveJson("db/boardmessages.json", boardMessages)
 
 	if getQuality5Reactions(message) >= min_reaction_num {
-		editBoardMessage(session, boardMessages[message.ID], getQuality5Reactions(message))
+		starredMessage := boardMessages[message.ID]
+		q5Num := getQuality5Reactions(message)
+
+		editBoardMessage(session, starredMessage.StarboardMessageID, q5Num)
+
+		starredMessage.StarNum = q5Num
+		boardMessages[message.ID] = starredMessage
 	} else {
-		err = session.ChannelMessageDelete(board_channel_id, boardMessages[message.ID])
+		err = session.ChannelMessageDelete(board_channel_id, boardMessages[message.ID].StarboardMessageID)
 
 		if err != nil {
 			logging.LogError(session, "deleting <:quality5:1146794549210001511> board message", err)

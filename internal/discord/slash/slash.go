@@ -11,6 +11,7 @@ import (
 	"github.com/trustig/robobaby0.5/internal/discord/slash/commentgamecmd"
 	"github.com/trustig/robobaby0.5/internal/discord/slash/gamblecmd"
 	"github.com/trustig/robobaby0.5/internal/discord/slash/registervotecmd"
+	"github.com/trustig/robobaby0.5/internal/discord/slash/startopcmd"
 	"github.com/trustig/robobaby0.5/internal/discord/slash/votecmd"
 	"github.com/trustig/robobaby0.5/internal/discord/slash/whitelistallcmd"
 	"github.com/trustig/robobaby0.5/internal/discord/slash/whitelistcmd"
@@ -36,6 +37,7 @@ var commands = map[string]Command{
 	"comment-game":  Command{commentgamecmd.COMMAND, commentgamecmd.Command},
 	"gamble":        Command{gamblecmd.COMMAND, gamblecmd.Command},
 	"baltop":        Command{baltopcmd.COMMAND, baltopcmd.Command},
+	"startop":       Command{startopcmd.COMMAND, startopcmd.Command},
 }
 
 func CreateCommands(session *discordgo.Session) {
