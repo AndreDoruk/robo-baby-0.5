@@ -13,9 +13,9 @@ import (
 	"github.com/trustig/robobaby0.5/internal/discord/name"
 	"github.com/trustig/robobaby0.5/internal/discord/slash"
 	"github.com/trustig/robobaby0.5/internal/discord/splatting"
+	"github.com/trustig/robobaby0.5/internal/discord/starboard"
 	"github.com/trustig/robobaby0.5/internal/discord/voting"
 	"github.com/trustig/robobaby0.5/internal/discord/whitelist"
-	"github.com/trustig/robobaby0.5/internal/discord/starboard"
 	"github.com/trustig/robobaby0.5/internal/schedule"
 	"github.com/trustig/robobaby0.5/internal/workshop"
 )

@@ -46,7 +46,7 @@ func Command(session *discordgo.Session, commandData discordgo.ApplicationComman
 
 	embed := discordgo.MessageEmbed{
 		Title:       "Starboard Stats",
-		Description: strconv.Itoa(len(boardArray)-1) + " starred messages with a total of " + strconv.Itoa(totalStars) + " <:quality5:1146794549210001511>",
+		Description: strconv.Itoa(len(boardArray)) + " starred messages with a total of " + strconv.Itoa(totalStars) + " <:quality5:1146794549210001511>",
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:  "Top Messages",
