@@ -18,7 +18,6 @@ import (
 	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/whitelist"
 	"github.com/AndreDoruk/robo-baby-0.5/internal/schedule"
 	"github.com/AndreDoruk/robo-baby-0.5/internal/workshop"
-	"github.com/AndreDoruk/robo-baby-0.5/internal/ping"
 )
 
 var isTesting bool = os.Getenv("TESTING") != ""
