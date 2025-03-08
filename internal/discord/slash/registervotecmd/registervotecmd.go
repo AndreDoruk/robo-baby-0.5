@@ -4,8 +4,8 @@ import (
 	"os"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/trustig/robobaby0.5/internal/database"
-	"github.com/trustig/robobaby0.5/internal/discord/voting"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/database"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/voting"
 )
 
 var channel_id string = os.Getenv("VOTING_CHANNEL_ID")

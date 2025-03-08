@@ -8,8 +8,8 @@ import (
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/trustig/robobaby0.5/internal/database"
-	"github.com/trustig/robobaby0.5/internal/discord/starboard"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/database"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/starboard"
 )
 
 var COMMAND *discordgo.ApplicationCommand = &discordgo.ApplicationCommand{

@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/trustig/robobaby0.5/internal/database"
-	"github.com/trustig/robobaby0.5/internal/discord/whitelist"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/database"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/whitelist"
 )
 
 var server_id string = os.Getenv("SERVER_ID")

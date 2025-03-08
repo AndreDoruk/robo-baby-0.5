@@ -2,7 +2,7 @@ package whitelist
 
 import (
 	"github.com/bwmarrin/discordgo"
-	"github.com/trustig/robobaby0.5/internal/database"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/database"
 )
 
 type Whitelist struct {

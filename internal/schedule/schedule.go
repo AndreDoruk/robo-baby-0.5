@@ -3,7 +3,7 @@ package schedule
 import (
 	"time"
 
-	"github.com/trustig/robobaby0.5/internal/database"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/database"
 )
 
 type validFunc func()

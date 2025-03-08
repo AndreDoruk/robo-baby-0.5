@@ -2,7 +2,7 @@ package commentgamecmd
 
 import (
 	"github.com/bwmarrin/discordgo"
-	"github.com/trustig/robobaby0.5/internal/discord/commentgame"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/commentgame"
 )
 
 var COMMAND *discordgo.ApplicationCommand = &discordgo.ApplicationCommand{

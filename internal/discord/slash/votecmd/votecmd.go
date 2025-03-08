@@ -2,7 +2,7 @@ package votecmd
 
 import (
 	"github.com/bwmarrin/discordgo"
-	"github.com/trustig/robobaby0.5/internal/discord/voting"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/voting"
 )
 
 var COMMAND *discordgo.ApplicationCommand = &discordgo.ApplicationCommand{

@@ -12,8 +12,8 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/bwmarrin/discordgo"
-	"github.com/trustig/robobaby0.5/internal/database"
-	"github.com/trustig/robobaby0.5/internal/discord/logging"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/database"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/logging"
 )
 
 var board_channel_id string = os.Getenv("STARBOARD_CHANNEL")

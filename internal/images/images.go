@@ -12,7 +12,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/trustig/robobaby0.5/internal/workshop"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/workshop"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/fogleman/gg"

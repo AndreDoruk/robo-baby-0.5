@@ -1,4 +1,4 @@
-module github.com/trustig/robobaby0.5
+module github.com/AndreDoruk/robo-baby-0.5
 
 go 1.21.0
 

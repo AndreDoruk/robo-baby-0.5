@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/trustig/robobaby0.5/internal/database"
-	"github.com/trustig/robobaby0.5/internal/workshop"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/database"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/workshop"
 )
 
 const item_num int = 4

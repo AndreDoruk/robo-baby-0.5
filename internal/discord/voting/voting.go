@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/trustig/robobaby0.5/internal/database"
-	"github.com/trustig/robobaby0.5/internal/discord/upload"
-	"github.com/trustig/robobaby0.5/internal/discord/whitelist"
-	"github.com/trustig/robobaby0.5/internal/images"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/database"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/upload"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/whitelist"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/images"
 )
 
 var channel_id string = os.Getenv("VOTING_CHANNEL_ID")

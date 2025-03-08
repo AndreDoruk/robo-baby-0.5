@@ -7,9 +7,9 @@ import (
 	"sync"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/trustig/robobaby0.5/internal/discord/upload"
-	"github.com/trustig/robobaby0.5/internal/images"
-	"github.com/trustig/robobaby0.5/internal/workshop"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/upload"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/images"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/workshop"
 )
 
 var channel_id string = os.Getenv("WORKSHOP_CHANNEL_ID")

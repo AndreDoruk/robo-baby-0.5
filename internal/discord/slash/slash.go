@@ -5,17 +5,17 @@ import (
 	"os"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/trustig/robobaby0.5/internal/discord/logging"
-	"github.com/trustig/robobaby0.5/internal/discord/slash/balancecmd"
-	"github.com/trustig/robobaby0.5/internal/discord/slash/baltopcmd"
-	"github.com/trustig/robobaby0.5/internal/discord/slash/commentgamecmd"
-	"github.com/trustig/robobaby0.5/internal/discord/slash/gamblecmd"
-	"github.com/trustig/robobaby0.5/internal/discord/slash/registervotecmd"
-	"github.com/trustig/robobaby0.5/internal/discord/slash/startopcmd"
-	"github.com/trustig/robobaby0.5/internal/discord/slash/votecmd"
-	"github.com/trustig/robobaby0.5/internal/discord/slash/whitelistallcmd"
-	"github.com/trustig/robobaby0.5/internal/discord/slash/whitelistcmd"
-	"github.com/trustig/robobaby0.5/internal/discord/slash/whitelistedcmd"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/logging"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/slash/balancecmd"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/slash/baltopcmd"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/slash/commentgamecmd"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/slash/gamblecmd"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/slash/registervotecmd"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/slash/startopcmd"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/slash/votecmd"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/slash/whitelistallcmd"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/slash/whitelistcmd"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/slash/whitelistedcmd"
 )
 
 var server_id string = os.Getenv("SERVER_ID")
