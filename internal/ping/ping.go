@@ -1,7 +1,8 @@
-package schedule
+package ping
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/bwmarrin/discordgo"
 )
