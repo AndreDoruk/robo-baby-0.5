@@ -41,9 +41,9 @@ var server_names = []string{
     "Balatro '95",
     "wons Lovers 'skibidi",
     "Mario '85 PC Port",
-    "Basement Vista"
-    "Downpour '96"
-    "Burning Basement '95"
+    "Basement Vista",
+    "Downpour '96",
+    "Burning Basement '95",
     "Total Drama Basement '95",
     "Basement 90 Knives",
     "Evil Basement '95",
