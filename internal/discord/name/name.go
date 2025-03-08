@@ -34,6 +34,22 @@ var server_names = []string{
 	"bear 5 over beast",
 	"big time rush pilled",
 	"alzheimer's official",
+    "Dying Penguins '4",
+    "B̵͊̎a̶̓̄s̴͗̆e̸̓͝m̸̍́e̸͆̌n̷͗t '95",
+    "Poland Hater '1",
+    "Poland '95",
+    "Balatro '95",
+    "wons Lovers 'skibidi",
+    "Mario '85 PC Port",
+    "Basement Vista"
+    "Downpour '96"
+    "Burning Basement '95"
+    "Total Drama Basement '95",
+    "Basement 90 Knives",
+    "Evil Basement '95",
+    "𝓯𝓻𝓮𝓪𝓴ment'95",
+    "Basement -1",
+    "Spongeopolis '28",
 }
 
 func ChangeServerName(session *discordgo.Session) {
