@@ -8,16 +8,16 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/AndreDoruk/robo-baby-0.5//internal/discord/commentgame"
-	"github.com/AndreDoruk/robo-baby-0.5//internal/discord/items"
-	"github.com/AndreDoruk/robo-baby-0.5//internal/discord/name"
-	"github.com/AndreDoruk/robo-baby-0.5//internal/discord/slash"
-	"github.com/AndreDoruk/robo-baby-0.5//internal/discord/splatting"
-	"github.com/AndreDoruk/robo-baby-0.5//internal/discord/starboard"
-	"github.com/AndreDoruk/robo-baby-0.5//internal/discord/voting"
-	"github.com/AndreDoruk/robo-baby-0.5//internal/discord/whitelist"
-	"github.com/AndreDoruk/robo-baby-0.5//internal/schedule"
-	"github.com/AndreDoruk/robo-baby-0.5//internal/workshop"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/commentgame"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/items"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/name"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/slash"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/splatting"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/starboard"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/voting"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/discord/whitelist"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/schedule"
+	"github.com/AndreDoruk/robo-baby-0.5/internal/workshop"
 )
 
 var isTesting bool = os.Getenv("TESTING") != ""
