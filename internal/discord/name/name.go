@@ -30,6 +30,10 @@ var server_names = []string{
 	"THINGS A CREEP MIGHT DO WHEN NEAR CHILDREN 2",
 	"oiled up",
 	"google, show me this guy's balls",
+	"Choose a way to born",
+	"bear 5 over beast",
+	"big time rush pilled",
+	"alzheimer's official",
 }
 
 func ChangeServerName(session *discordgo.Session) {

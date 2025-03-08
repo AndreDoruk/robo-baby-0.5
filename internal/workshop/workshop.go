@@ -37,11 +37,17 @@ type WorkshopComment struct {
 	IconURL string
 }
 
+const fallback_image = "https://cdn.discordapp.com/attachments/1146773305693585420/1151462507706331158/image.png"
+
 func getItem(url string) WorkshopItem {
 	document := getPageDocument(url)
 
 	itemName := document.Find(".workshopItemTitle").Text()
-	previewImage := document.Find(".workshopItemPreviewImageMain").Last().AttrOr("src", "https://cdn.discordapp.com/attachments/1146775467295248506/1147923715758243892/image0-22.png")
+	previewImage := document.Find(".workshopItemPreviewImageMain").Last().AttrOr("src", fallback_image)
+
+	if previewImage == fallback_image {
+		previewImage = document.Find(".workshopItemPreviewImageEnlargeable").Last().AttrOr("src", fallback_image)
+	}
 
 	tbody := document.Find("tbody") // Only tbody in the html lol!
 	itemStats := getStatsFromChildren(tbody)
