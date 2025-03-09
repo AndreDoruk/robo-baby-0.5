@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"time"
+	"bufio"
 
 	"github.com/bwmarrin/discordgo"
 
@@ -36,14 +37,15 @@ func main() {
 
 	session.Identify.Intents = discordgo.IntentsAll
 
-	if !isTesting {
+	if false {
 		session.AddHandler(whitelist.OnJoin)
 		session.AddHandler(commentgame.OnInteract)
 		session.AddHandler(splatting.OnReact)
 		session.AddHandler(starboard.OnUnreact)
-		session.AddHandler(slash.OnInteract)
 		session.AddHandler(starboard.OnReact)
 	}
+
+	session.AddHandler(slash.OnInteract)
 
 	session.Open()
 	defer session.Close()
@@ -79,6 +81,8 @@ func main() {
 	}
 
 	fmt.Println("Bot online")
-	for {
-	}
+
+	input := bufio.NewScanner(os.Stdin)
+    input.Scan()
+	session.Close()
 }

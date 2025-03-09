@@ -12,7 +12,7 @@ var server_id string = os.Getenv("SERVER_ID")
 
 var server_names = []string{
 	"Basement '95",
-	"Rotten Tomato",
+	/*"Rotten Tomato",
 	"Banned 𝘇𝗮𝗺𝗶𝗲𝗹",
 	"Brontulous Orange",
 	"im so green j could green a hors",
@@ -34,6 +34,7 @@ var server_names = []string{
 	"bear 5 over beast",
 	"big time rush pilled",
 	"alzheimer's official",
+	*/
     "Dying Penguins '4",
     "B̵͊̎a̶̓̄s̴͗̆e̸̓͝m̸̍́e̸͆̌n̷͗t '95",
     "Poland Hater '1",

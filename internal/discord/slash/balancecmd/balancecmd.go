@@ -2,6 +2,8 @@ package balancecmd
 
 import (
 	"strconv"
+	"strings"
+	"fmt"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/AndreDoruk/robo-baby-0.5/internal/database"
@@ -15,7 +17,7 @@ var COMMAND *discordgo.ApplicationCommand = &discordgo.ApplicationCommand{
 		{
 			Type:        discordgo.ApplicationCommandOptionString,
 			Name:        "userid",
-			Description: "Id of the user to check",
+			Description: "ID of the user to check",
 			Required:    false,
 		},
 	},
@@ -29,10 +31,27 @@ func Command(session *discordgo.Session, commandData discordgo.ApplicationComman
 		return "Your balance: " + strconv.Itoa(balances[interaction.Member.User.ID]) + " 🍅"
 	} else {
 		userId := commandData.Options[0].StringValue()
+		userId, _ = strings.CutPrefix(userId, "<@")
+		userId, _ = strings.CutSuffix(userId, ">")
 
 		_, err := session.User(userId)
 		if err != nil {
-			return "```go\n" + err.Error() + "```"
+			codeString := strings.SplitAfterN(err.Error(), "\"code\":", 2)[1]
+			codeString = strings.Split(codeString, "}")[0]
+			codeString = strings.Split(codeString, ",")[0]
+			codeString, _ = strings.CutPrefix(codeString, " ")
+			errorCode, _ := strconv.Atoi(codeString)
+
+			fmt.Println(codeString)
+
+			if errorCode == discordgo.ErrCodeUnknownUser {
+				return "Invalid user ID!"
+			} else 
+			if errorCode == discordgo.ErrCodeInvalidFormBody {
+				return "Invalid format!"
+			} else {
+				return "```go\n" + err.Error() + "```"
+			}
 		}
 
 		return "<@" + userId + ">'s balance: " + strconv.Itoa(balances[userId]) + " 🍅"
